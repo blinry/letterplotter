@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="paper-full.js"></script>
+    <script type="text/paperscript" canvas="canvas">
+        var downloadAsSVG = function (fileName) {
+           if(!fileName) {
+               fileName = "paperjs_example.svg"
+           }
+
+           var url = "data:image/svg+xml;utf8," + encodeURIComponent(paper.project.exportSVG({asString:true}));
+           
+           var link = document.createElement("a")
+           link.download = fileName
+           link.href = url
+           link.click()
+        }
+
+        function combineGroup(compound, group) {
+            for(var i = 0; i < group.children.length; i++) {
+                var child = group.children[i]
+                if (child instanceof Group) {
+                    combineGroup(compound, child)
+                } else if (child instanceof CompoundPath) {
+                    for(var j = 0; j < child.children.length; j++) {
+                        compound.addChild(child.children[j].clone({insert: false}))
+                    }
+                } else if (child instanceof Path) {
+                    compound.addChild(child.clone({insert: false}))
+                } else {
+                    console.log(child)
+                }
+            }
+        }
+
+        function svgLoaded(item, data) {
+            item.fitBounds(rect, true)
+            var c = new CompoundPath()
+            var newc = new CompoundPath()
+            combineGroup(c, item)
+            //c.strokeColor = "black"
+            for(var i = 0; i < c.children.length; i++) {
+                var child = c.children[i]
+                newc.addChild(child.intersect(shape, {trace: false}))
+            }
+            console.log(newc)
+            newc.strokeColor = "black"
+            c.remove()
+            //item.translate(new Point(0, 500))
+            //downloadAsSVG("map")
+        }
+
+        project.importSVG("/map.svg", {onLoad: svgLoaded, expandShapes: true, insert: false})
+
+        //var group = new Group()
+
+        var rect = new Rectangle(new Point(50, 50), new Size(600, 400))
+        var shape = new Path.Rectangle(rect)
+        shape.strokeColor = "black"
+        //group.addChild(shape)
+        //group.clipped = true
+    </script>
+</head>
+<body>
+    <canvas id="canvas" width="1000" height="1000"></canvas>
+</body>
+</html>
