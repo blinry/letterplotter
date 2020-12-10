@@ -36,6 +36,7 @@
 
         function svgLoaded(item, data) {
             item.fitBounds(rect, true)
+            item.scale(1.01) // to remove the outline
             var c = new CompoundPath()
             var newc = new CompoundPath()
             combineGroup(c, item)
@@ -44,20 +45,44 @@
                 var child = c.children[i]
                 newc.addChild(child.intersect(shape, {trace: false}))
             }
-            console.log(newc)
-            newc.strokeColor = "black"
+
+            var newc2 = new CompoundPath()
+            for(var i = 0; i < newc.children.length; i++) {
+                var child = newc.children[i]
+                newc2.addChild(child.subtract(shape2, {trace: false}))
+            }
+
+            newc2.strokeColor = "black"
+
             c.remove()
+            newc.remove()
+
+            shape.remove()
+            shape2.remove()
             //item.translate(new Point(0, 500))
-            //downloadAsSVG("map")
+
+            downloadAsSVG("map")
         }
+
+        var w = 155 * 96 / 25.4
+        var h = 110 * 96 / 25.4
+        paper.view.setViewSize(new Size(w, h))
 
         project.importSVG("/map.svg", {onLoad: svgLoaded, expandShapes: true, insert: false})
 
         //var group = new Group()
 
-        var rect = new Rectangle(new Point(50, 50), new Size(600, 400))
+        var rect = new Rectangle(new Point(0, 0), new Size(w, h))
         var shape = new Path.Rectangle(rect)
         shape.strokeColor = "black"
+
+        var address = new Rectangle(new Point(0.5*w, 0.6*h), new Size(0.43*w, 0.3*h))
+        var shape2 = new Path.Rectangle(address)
+        shape2.strokeColor = "black"
+
+
+        new PointText({point: new Point(0.53*w, 0.68*h), content: "Firstname Lastname\nPostdamer Platz\n\n10785 Berlin", strokeColor: "black", fontSize: h/20.7, fontFamily: "Almendra Display"})
+
         //group.addChild(shape)
         //group.clipped = true
     </script>

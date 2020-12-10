@@ -1,0 +1,15 @@
+{
+  "name": "letterplotter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "blinry",
+  "license": "ISC",
+  "dependencies": {
+    "opentype.js": "^1.3.3",
+    "paper-jsdom": "^0.12.11"
+  }
+}
