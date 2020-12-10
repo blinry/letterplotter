@@ -35,33 +35,37 @@ function svgLoaded(item, data) {
 
     //new PointText({point: new Point(0.53*w, 0.68*h), content: text, strokeColor: "black", fontSize: h/20.7, fontFamily: "Almendra Display"})
 
-        item.fitBounds(rect, true)
-        item.scale(1.01) // to remove the outline
-        var c = new CompoundPath()
-        var newc = new CompoundPath()
-        combineGroup(c, item)
-        //c.strokeColor = "black"
-        for(var i = 0; i < c.children.length; i++) {
-            var child = c.children[i]
-            newc.addChild(child.intersect(shape, {trace: false}))
-        }
+    var cutrect = new Rectangle(new Point(border, border), new Size(w-2*border, h-2*border))
+    var cutrectshape = new Path.Rectangle(cutrect)
+    cutrectshape.remove()
 
-        var newc2 = new CompoundPath()
-        for(var i = 0; i < newc.children.length; i++) {
-            var child = newc.children[i]
-            newc2.addChild(child.subtract(shape2, {trace: false}))
-        }
+    item.fitBounds(cutrect, true)
+    item.scale(1.01) // to remove the outline
+    var c = new CompoundPath()
+    var newc = new CompoundPath()
+    combineGroup(c, item)
+    //c.strokeColor = "black"
+    for(var i = 0; i < c.children.length; i++) {
+        var child = c.children[i]
+        newc.addChild(child.intersect(cutrectshape, {trace: false}))
+    }
 
-        newc2.strokeColor = "black"
+    var newc2 = new CompoundPath()
+    for(var i = 0; i < newc.children.length; i++) {
+        var child = newc.children[i]
+        newc2.addChild(child.subtract(shape2, {trace: false}))
+    }
 
-        c.remove()
-        newc.remove()
+    newc2.strokeColor = "black"
 
-        shape.remove()
-        shape2.remove()
-        //item.translate(new Point(0, 500))
+    c.remove()
+    newc.remove()
 
-        //downloadAsSVG("map")
+    shape.remove()
+    shape2.remove()
+    everything.addChild(newc2)
+
+    //downloadAsSVG("map")
 
     var text = fs.readFileSync("text", "utf8")
     opentype.load("AlmendraDisplay-Regular.ttf", function (err, font) {
@@ -76,11 +80,15 @@ function svgLoaded(item, data) {
                 '</svg>';
                 project.importSVG(svg, {onLoad: function(item, data) {
                     item.strokeColor = "black"
+                    everything.addChild(item)
 
                 }, expandShapes: true})
             }
 
         }
+
+        everything.translate(-offset_x, -offset_y)
+
         var svg = paper.project.exportSVG({asString: true})
         fs.writeFile("result.svg", svg, function (err, data) {
             if (err) {
@@ -91,12 +99,17 @@ function svgLoaded(item, data) {
     }
 }
 
-var w = 155 * 96 / 25.4
-var h = 110 * 96 / 25.4
+var border = 5 * 96 / 25.4
+var w = 162 * 96 / 25.4
+var h = 113 * 96 / 25.4
+
+var offset_x = -1 * 96/25.4
+var offset_y = 48 * 96/25.4
 
 with (paper) {
     paper.setup(new Size(w, h))
 
-    paper.project.importSVG("map.svg", {onLoad: svgLoaded, expandShapes: true, insert: false})
+    var everything = new Group()
 
+    paper.project.importSVG("map.svg", {onLoad: svgLoaded, expandShapes: true, insert: false})
 }

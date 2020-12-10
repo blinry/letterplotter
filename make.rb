@@ -7,11 +7,11 @@ p address
 json = `curl "https://nominatim.openstreetmap.org/search?q=#{address}&format=json&addressdetails=0"`
 json = JSON.parse(json)
 
-size_x = 0.01
-size_y = 0.005
+size_x = 0.01 / 2
+size_y = 0.005 / 2
 
-lat = json[0]["lat"].to_f + rand()*size_y/10 - rand()*size_y/20
-lon = json[0]["lon"].to_f + size_x/2 + rand()*size_x/10 - rand()*size_x/20
+lat = json[0]["lat"].to_f
+lon = json[0]["lon"].to_f + size_x/2
 p lat
 p lon
 
