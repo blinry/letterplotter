@@ -21,7 +21,14 @@ right = lon + size_x
 bottom = lat - size_y
 top = lat + size_y
 
+puts "Downloading OSM data..."
 `wget https://api.openstreetmap.org/api/0.6/map?bbox=#{left},#{bottom},#{right},#{top} -O map.osm`
+puts "Converting to GeoJSON..."
 `osmtogeojson map.osm > map.geojson`
+puts "Converting to SVG..."
 `mapshaper -i map.geojson -clip bbox=#{left},#{bottom},#{right},#{top} -proj webmercator -style fill=none stroke=black stroke-width=1 -o format=svg`
+puts "Arranging..."
 `node .`
+puts "Optimizing..."
+`python svgsort/run.py result.svg result-sorted.svg --no-adjust`
+puts "Done!"
