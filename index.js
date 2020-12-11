@@ -87,7 +87,9 @@ function svgLoaded(item, data) {
 
         }
 
-        everything.translate(-offset_x, -offset_y)
+        //everything.rotate(90)
+        //everything.translate(-(w/2-h/2), w/2-h/2)
+        everything.translate(offset_x, -offset_y)
 
         var svg = paper.project.exportSVG({asString: true})
         fs.writeFile("result.svg", svg, function (err, data) {
@@ -103,8 +105,8 @@ var border = 5 * 96 / 25.4
 var w = 162 * 96 / 25.4
 var h = 113 * 96 / 25.4
 
-var offset_x = -1 * 96/25.4
-var offset_y = 48 * 96/25.4
+var offset_x = -6 * 96/25.4
+var offset_y = 19 * 96/25.4
 
 with (paper) {
     paper.setup(new Size(w, h))
